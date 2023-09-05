@@ -22,7 +22,7 @@ async function connectToDatabase() {
 
 connectToDatabase();
 
-app.get('/health', (req, res) => {
+app.get('/healthcheck', (req, res) => {
     res.status(200).json({ message: 'Server is up and running' });
   });
 
