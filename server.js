@@ -4,12 +4,14 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const authRoutes = require('./routes/auth');
 
 // Middelwares
 const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
+app.use('/api/auth', authRoutes);
 
 
 // Conntection to the Database
@@ -31,6 +33,9 @@ connectToDatabase();
 app.get('/healthcheck', (req, res) => {
     res.status(200).json({ message: 'Server is up and running' });
   });
+
+
+
 
 // Start the server
 app.listen(process.env.PORT, () => {
