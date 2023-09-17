@@ -1,8 +1,10 @@
-const express = require('express');
+const express = require("express");
+
 const router = express.Router();
 
-router.get('/create', (req, res) => {
-    res.status(200).json({ data: 'Create user route' });
-});
+// import
+const { createOrUpdateUser } = require("../controllers/auth");
 
-module.express = router;
+router.get("/create-or-update-user", createOrUpdateUser);
+
+module.exports = router;
