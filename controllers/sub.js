@@ -5,9 +5,13 @@ exports.create = async (req, res) => {
   try {
     const { name, parent } = req.body;
     if (!name) throw new Error("Name is required");
+    if (!parent) throw new Error("Parent category is required");
     const sub = await new Sub({ name, slug: slugify(name), parent }).save();
     res.status(201).json(sub);
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ error: 'Duplicate name value entered.' });
+    }
     res.status(400).json({ error: err.message || "Create sub failed" });
   }
 };
