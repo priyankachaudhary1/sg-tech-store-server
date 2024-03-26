@@ -225,8 +225,37 @@ const handleCategory = async (req, res, category) => {
   }
 };
 
+const handleStar = async (req, res, stars) => {
+  try {
+    const aggregates = await Product.aggregate([
+      {
+        $project: {
+          document: "$$ROOT",
+          floorAverage: {
+            $floor: { $avg: "$ratings.star" }, // floor value of 3.33 will be 3
+          },
+        },
+      },
+      { $match: { floorAverage: stars } },
+    ]).limit(12);
+
+    const ids = aggregates.map(a => a.document._id);
+
+    const products = await Product.find({ _id: { $in: ids } })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      .populate("ratings.postedBy", "_id name")
+
+    res.json(products);
+  } catch (err) {
+    console.log("ERROR", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 exports.searchFilters = async (req, res) => {
-  const { query, price, category} = req.body;
+  const { query, price, category, stars} = req.body;
 
   if (query) {
     console.log("query", query);
@@ -239,7 +268,10 @@ exports.searchFilters = async (req, res) => {
   }
 
   if (category) {
-   
     await handleCategory(req, res, category);
+  }
+
+  if (stars) {
+    await handleStar(req, res, stars);
   }
 };
